@@ -1,46 +1,71 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Rádio do Marquês</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101322">
+<title>Rádio do Marquês | Ao vivo</title>
 <style>
-:root{color-scheme:dark;font-family:system-ui,Arial,sans-serif}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(145deg,#10172a,#080b12);color:#f7f8fc;display:grid;place-items:center;padding:24px}.card{width:min(100%,560px);background:#171e2d;border:1px solid #34415a;border-radius:24px;padding:28px;box-shadow:0 20px 70px #0006}.brand{display:flex;gap:15px;align-items:center;margin-bottom:24px}.logo{width:58px;height:58px;border-radius:18px;background:#7c3aed;display:grid;place-items:center;font-size:28px}h1{margin:0;font-size:clamp(1.6rem,5vw,2.3rem)}p{color:#b9c4d8;line-height:1.5}.live{display:inline-flex;align-items:center;gap:8px;color:#a7f3d0;font-size:.9rem}.dot{width:9px;height:9px;background:#34d399;border-radius:50%}button{border:0;border-radius:12px;padding:13px 16px;font-weight:700;cursor:pointer;background:#8b5cf6;color:white}button.secondary{background:#303b51}button:disabled{opacity:.5;cursor:not-allowed}.actions{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}audio{width:100%;margin:12px 0}label{display:block;margin-top:18px;font-weight:650}input{width:100%;padding:12px;border-radius:10px;border:1px solid #46536b;background:#0e1420;color:white;margin-top:7px}.status{font-size:.9rem;min-height:1.5em;color:#c4b5fd}.small{font-size:.8rem;color:#94a3b8}
+:root{color-scheme:dark;--bg:#090b13;--panel:#141827;--panel2:#1b2032;--line:#30374e;--text:#f7f8ff;--muted:#a9b2c9;--purple:#9b72ff;--pink:#ed72c7;--green:#4ce0a1}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 15% 0%,#28204c 0,transparent 38%),radial-gradient(ellipse at 90% 20%,#172d4b 0,transparent 35%),var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input{font:inherit}button{cursor:pointer}.wrap{width:min(1120px,100%);margin:auto;padding:24px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:8px 0 28px}.brand{display:flex;align-items:center;gap:12px}.logo{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,var(--purple),var(--pink));box-shadow:0 8px 28px #9b72ff44;font-size:24px}.brand-name{font-weight:800;letter-spacing:-.04em;font-size:1.1rem}.brand-sub{color:var(--muted);font-size:.8rem;margin-top:3px}.pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:#111626aa;padding:8px 12px;border-radius:999px;color:var(--muted);font-size:.8rem}.status-dot{width:8px;height:8px;border-radius:50%;background:#7b8499;box-shadow:0 0 0 4px #7b849922}.status-dot.live{background:var(--green);box-shadow:0 0 0 4px #4ce0a122}.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:22px;align-items:stretch}.panel{background:linear-gradient(145deg,#171c2eeb,#101522f2);border:1px solid var(--line);border-radius:26px;box-shadow:0 24px 70px #0003}.main-panel{padding:clamp(22px,4vw,42px);position:relative;overflow:hidden}.eyebrow{font-size:.76rem;text-transform:uppercase;letter-spacing:.17em;color:#c5aaff;font-weight:800}.hero h1{font-size:clamp(2.2rem,6vw,4.6rem);letter-spacing:-.065em;line-height:.98;margin:17px 0 14px}.gradient-text{background:linear-gradient(90deg,#fff,#c9b7ff 60%,#f0a7df);-webkit-background-clip:text;background-clip:text;color:transparent}.intro{max-width:530px;color:var(--muted);line-height:1.7;margin:0}.visualizer{height:65px;display:flex;align-items:center;gap:5px;margin:27px 0 18px}.bar{width:5px;border-radius:8px;background:linear-gradient(180deg,var(--pink),var(--purple));height:var(--h);opacity:.82;transform-origin:center;animation:wave 1.05s ease-in-out infinite alternate;animation-delay:var(--d)}.paused .bar{animation-play-state:paused;opacity:.35}@keyframes wave{from{transform:scaleY(.45)}to{transform:scaleY(1)}}.player-box{border:1px solid #343b55;background:#0b0f1b;border-radius:18px;padding:16px}.player-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}.player-title{font-weight:750}.player-note{font-size:.8rem;color:var(--muted);margin-top:3px}.live-label{font-size:.72rem;font-weight:800;color:#ffb4e8;border:1px solid #754b79;border-radius:7px;padding:5px 7px;letter-spacing:.08em}audio{width:100%;height:42px;display:block} .controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:13px}.btn{border:1px solid transparent;border-radius:12px;padding:12px 16px;font-weight:750;transition:transform .15s,filter .15s}.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}.btn-primary{background:linear-gradient(110deg,#8b5cf6,#c05bdc);color:white;box-shadow:0 8px 22px #9b72ff26}.btn-quiet{background:#252b40;border-color:#3b435c;color:#edf0ff}.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}.side-panel{padding:26px;display:flex;flex-direction:column;gap:20px}.side-title{font-size:1.15rem;font-weight:800;margin:0}.side-desc{color:var(--muted);line-height:1.6;font-size:.92rem;margin:8px 0 0}.feature{display:flex;gap:13px;align-items:flex-start}.feature-icon{flex:0 0 40px;height:40px;display:grid;place-items:center;border-radius:13px;background:#292345;font-size:19px}.feature strong{display:block;margin:2px 0 5px}.feature p{margin:0;color:var(--muted);font-size:.86rem;line-height:1.5}.divider{height:1px;background:var(--line)}.mic-panel{margin-top:22px;padding:clamp(22px,4vw,34px);display:grid;grid-template-columns:1fr 1fr;gap:28px}.section-kicker{color:#c5aaff;text-transform:uppercase;letter-spacing:.13em;font-size:.74rem;font-weight:800}.mic-panel h2{font-size:clamp(1.5rem,3vw,2rem);letter-spacing:-.04em;margin:10px 0}.mic-panel p{color:var(--muted);line-height:1.6;font-size:.92rem}.form-side{align-self:center}.label{display:block;font-weight:700;font-size:.85rem;margin-bottom:8px}.token-input{width:100%;padding:13px 14px;background:#0b0f1b;border:1px solid #3b435c;border-radius:12px;color:var(--text);outline:none}.token-input:focus{border-color:var(--purple);box-shadow:0 0 0 3px #9b72ff22}.message{min-height:22px;color:#c5b4ff;font-size:.86rem;margin-top:12px}.privacy{font-size:.78rem!important;color:#8792ad!important}.footer{padding:24px 0 10px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#7f89a3;font-size:.78rem}.footer a{color:#c4b5fd;text-decoration:none}.footer a:hover{text-decoration:underline}.hide{display:none!important}
+@media(max-width:800px){.hero{grid-template-columns:1fr}.side-panel{display:grid;grid-template-columns:1fr 1fr}.side-panel .side-title,.side-panel>.side-desc,.side-panel>.divider{grid-column:1/-1}.mic-panel{grid-template-columns:1fr;gap:12px}}@media(max-width:520px){.wrap{padding:15px}.topbar{align-items:flex-start;padding-bottom:18px}.brand-sub{max-width:170px}.pill{font-size:.72rem;padding:7px 9px}.main-panel,.side-panel{padding:21px;border-radius:20px}.side-panel{display:flex}.hero h1{font-size:2.8rem}.visualizer{margin:20px 0 14px}.controls .btn{flex:1}.mic-panel{border-radius:20px}}
 </style>
 </head>
-<body><main class="card">
-<div class="brand"><div class="logo">📻</div><div><h1>Rádio do Marquês</h1><div class="live"><span class="dot"></span> Rádio online</div></div></div>
-<p>Sintonize e acompanhe a programação. Quando houver transmissão ao vivo, o áudio será reproduzido aqui.</p>
-<audio id="player" controls preload="none" src="/stream/live.mp3"></audio>
-<div class="actions"><button id="play">▶ Ouvir rádio</button><button id="stop" class="secondary">■ Parar áudio</button></div>
-<hr style="border-color:#34415a;margin:24px 0">
-<h2>Transmitir pelo microfone</h2><p class="small">A transmissão exige a chave privada configurada no Render. Não compartilhe essa chave.</p>
-<label for="token">Chave de transmissão</label><input id="token" type="password" autocomplete="off" placeholder="Cole seu BROADCAST_TOKEN">
-<div class="actions"><button id="start">🎙 Iniciar transmissão</button><button id="end" class="secondary" disabled>Encerrar</button></div>
-<div id="status" class="status" role="status">Pronto para conectar.</div>
-<p class="small">Permita o uso do microfone quando o navegador perguntar. Para transmitir, use HTTPS e um navegador compatível.</p>
+<body>
+<div class="wrap">
+<header class="topbar">
+  <div class="brand"><div class="logo" aria-hidden="true">📻</div><div><div class="brand-name">Rádio do Marquês</div><div class="brand-sub">Sua sintonia, onde você estiver</div></div></div>
+  <div class="pill"><span id="statusDot" class="status-dot"></span><span id="statusText">Verificando rádio…</span></div>
+</header>
+<main>
+<section class="hero">
+  <div class="panel main-panel">
+    <div class="eyebrow">♪ A sua rádio na internet</div>
+    <h1>Sintonize.<br><span class="gradient-text">Sinta a música.</span></h1>
+    <p class="intro">Dê o play e acompanhe a Rádio do Marquês. Uma experiência feita para ouvir no computador ou no celular.</p>
+    <div id="visualizer" class="visualizer paused" aria-hidden="true"></div>
+    <div class="player-box">
+      <div class="player-head"><div><div class="player-title">Ouça ao vivo</div><div id="playerNote" class="player-note">Pronto para reproduzir</div></div><span class="live-label">RÁDIO WEB</span></div>
+      <audio id="player" controls preload="none" src="/stream/live.mp3">Seu navegador não suporta áudio HTML5.</audio>
+      <div class="controls"><button class="btn btn-primary" id="playBtn">▶ Ouvir rádio</button><button class="btn btn-quiet" id="stopBtn">■ Parar</button></div>
+    </div>
+  </div>
+  <aside class="panel side-panel">
+    <div><div class="section-kicker">Bem-vindo</div><h2 class="side-title" style="margin-top:9px">Aumente o som. O momento é seu.</h2><p class="side-desc">A página se adapta à tela do seu dispositivo e mostra o estado da conexão com o serviço da rádio.</p></div>
+    <div class="divider"></div>
+    <div class="feature"><div class="feature-icon">🎧</div><div><strong>Player integrado</strong><p>Reproduza ou pause o áudio sem sair desta página.</p></div></div>
+    <div class="feature"><div class="feature-icon">📱</div><div><strong>Feito para celular</strong><p>Layout responsivo para computador, tablet e smartphone.</p></div></div>
+    <div class="feature"><div class="feature-icon">🎙️</div><div><strong>Estúdio de transmissão</strong><p>Área de acesso para transmitir usando o microfone, com chave privada.</p></div></div>
+  </aside>
+</section>
+<section class="panel mic-panel">
+  <div><div class="section-kicker">Área do locutor</div><h2>Entre no ar pelo microfone</h2><p>Digite a chave de transmissão configurada nas variáveis do Render e permita o acesso ao microfone. Mantenha essa chave em segredo.</p><p class="privacy">O navegador solicitará permissão para usar o microfone. A transmissão funciona em conexão segura (HTTPS).</p></div>
+  <div class="form-side">
+    <label class="label" for="token">Chave de transmissão</label>
+    <input class="token-input" id="token" type="password" autocomplete="off" placeholder="Cole seu BROADCAST_TOKEN">
+    <div class="controls"><button class="btn btn-primary" id="startBtn">🎙 Iniciar transmissão</button><button class="btn btn-quiet" id="endBtn" disabled>Encerrar</button></div>
+    <div class="message" id="message" role="status" aria-live="polite">Estúdio pronto.</div>
+  </div>
+</section>
 </main>
+<footer class="footer"><span>© <span id="year"></span> Rádio do Marquês</span><span>Feita para ouvir de qualquer lugar · <a href="/health" target="_blank" rel="noopener">Status do serviço</a></span></footer>
+</div>
 <script>
-const player=document.querySelector('#player'),status=document.querySelector('#status'),token=document.querySelector('#token');
-let ws=null,recorder=null,stream=null;
-document.querySelector('#play').onclick=async()=>{try{player.src='/stream/live.mp3?ts='+Date.now();await player.play()}catch(e){status.textContent='Não foi possível reproduzir. A rádio pode estar fora do ar.'}};
-document.querySelector('#stop').onclick=()=>{player.pause();player.removeAttribute('src');player.load()};
-document.querySelector('#start').onclick=async()=>{
- const key=token.value.trim();if(!key){status.textContent='Digite a chave de transmissão.';return}
- try{
-  stream=await navigator.mediaDevices.getUserMedia({audio:true});
-  const proto=location.protocol==='https:'?'wss:':'ws:';
-  ws=new WebSocket(proto+'//'+location.host+'/broadcast?token='+encodeURIComponent(key));
-  ws.binaryType='arraybuffer';
-  ws.onopen=()=>{
-   const mime=['audio/webm;codecs=opus','audio/webm'].find(x=>MediaRecorder.isTypeSupported(x));
-   recorder=new MediaRecorder(stream,mime?{mimeType:mime}:undefined);
-   recorder.ondataavailable=e=>{if(e.data.size&&ws&&ws.readyState===WebSocket.OPEN)ws.send(e.data)};
-   recorder.start(250);status.textContent='Microfone conectado. Transmissão iniciada.';document.querySelector('#start').disabled=true;document.querySelector('#end').disabled=false;
-  };
-  ws.onmessage=e=>{try{const d=JSON.parse(e.data);if(d.type==='error')status.textContent=d.message}catch{}};
-  ws.onerror=()=>status.textContent='Falha na conexão. Confira a chave e os logs do servidor.';
-  ws.onclose=()=>{if(recorder&&recorder.state!=='inactive')recorder.stop();if(stream)stream.getTracks().forEach(t=>t.stop());document.querySelector('#start').disabled=false;document.querySelector('#end').disabled=true};
- }catch(e){status.textContent='Não foi possível acessar o microfone: '+e.message}
-};
-document.querySelector('#end').onclick=()=>{if(recorder&&recorder.state!=='inactive')recorder.stop();if(ws)ws.close();if(stream)stream.getTracks().forEach(t=>t.stop());status.textContent='Transmissão encerrada.';document.querySelector('#start').disabled=false;document.querySelector('#end').disabled=true};
-</script></body></html>
+const $=s=>document.querySelector(s);
+const player=$('#player'),message=$('#message'),token=$('#token'),viz=$('#visualizer');
+let ws=null,recorder=null,micStream=null,starting=false;
+$('#year').textContent=new Date().getFullYear();
+for(let i=0;i<34;i++){const b=document.createElement('span');b.className='bar';b.style.setProperty('--h',(12+Math.round(Math.abs(Math.sin(i*2.1))*49))+'px');b.style.setProperty('--d',(-i*.047)+'s');viz.appendChild(b)}
+function setMessage(t){message.textContent=t}
+async function checkStatus(){try{const r=await fetch('/api/status',{cache:'no-store'});if(!r.ok)throw Error();const d=await r.json();$('#statusText').textContent=d.live?'Locutor transmitindo':'Serviço online';$('#statusDot').classList.toggle('live',Boolean(d.live));}catch(e){$('#statusText').textContent='Status indisponível';$('#statusDot').classList.remove('live')}}
+checkStatus();setInterval(checkStatus,15000);
+$('#playBtn').addEventListener('click',async()=>{try{player.src='/stream/live.mp3?ts='+Date.now();await player.play();$('#playerNote').textContent='Reprodução iniciada';viz.classList.remove('paused')}catch(e){$('#playerNote').textContent='Não foi possível iniciar o áudio';setMessage('O áudio não iniciou. Pode não haver transmissão ativa no momento.')}});
+player.addEventListener('playing',()=>{viz.classList.remove('paused');$('#playerNote').textContent='Você está ouvindo a rádio'});player.addEventListener('pause',()=>viz.classList.add('paused'));player.addEventListener('error',()=>{$('#playerNote').textContent='Aguardando sinal de áudio'});
+$('#stopBtn').addEventListener('click',()=>{player.pause();player.removeAttribute('src');player.load();player.src='/stream/live.mp3';$('#playerNote').textContent='Reprodução pausada';viz.classList.add('paused')});
+function cleanup(){if(recorder&&recorder.state!=='inactive'){try{recorder.stop()}catch(e){}}if(micStream)micStream.getTracks().forEach(t=>t.stop());micStream=null;recorder=null;if(ws){const old=ws;ws=null;if(old.readyState===WebSocket.OPEN||old.readyState===WebSocket.CONNECTING)old.close()}$('#startBtn').disabled=false;$('#endBtn').disabled=true;starting=false}
+$('#startBtn').addEventListener('click',async()=>{if(starting)return;const key=token.value.trim();if(!key){setMessage('Digite a chave de transmissão primeiro.');token.focus();return}if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){setMessage('Este navegador não oferece acesso ao microfone. Use um navegador atualizado em HTTPS.');return}starting=true;$('#startBtn').disabled=true;setMessage('Solicitando acesso ao microfone…');try{micStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});const scheme=location.protocol==='https:'?'wss:':'ws:';const socket=new WebSocket(scheme+'//'+location.host+'/broadcast?token='+encodeURIComponent(key));ws=socket;socket.onopen=()=>{const type=['audio/webm;codecs=opus','audio/webm'].find(t=>MediaRecorder.isTypeSupported(t));recorder=new MediaRecorder(micStream,type?{mimeType:type}:undefined);recorder.ondataavailable=e=>{if(e.data.size&&ws===socket&&socket.readyState===WebSocket.OPEN)socket.send(e.data)};recorder.onerror=()=>setMessage('O navegador informou um erro na gravação.');recorder.start(250);starting=false;$('#startBtn').disabled=true;$('#endBtn').disabled=false;setMessage('Conectado. Sua transmissão foi iniciada.');checkStatus()};socket.onmessage=e=>{try{const d=JSON.parse(e.data);if(d.type==='error')setMessage(d.message)}catch(e){}};socket.onerror=()=>setMessage('Falha na conexão. Confira a chave e os logs do Render.');socket.onclose=e=>{if(recorder&&recorder.state!=='inactive'){try{recorder.stop()}catch(err){}}if(micStream)micStream.getTracks().forEach(t=>t.stop());micStream=null;recorder=null;ws=null;starting=false;$('#startBtn').disabled=false;$('#endBtn').disabled=true;if(e.code===1006)setMessage('Conexão encerrada. Verifique se a chave está correta e se já existe outro locutor conectado.');checkStatus()}}catch(e){cleanup();setMessage('Não foi possível acessar o microfone: '+e.message)}});
+$('#endBtn').addEventListener('click',()=>{cleanup();setMessage('Transmissão encerrada.');checkStatus()});
+window.addEventListener('beforeunload',()=>{if(recorder&&recorder.state!=='inactive')recorder.stop();if(micStream)micStream.getTracks().forEach(t=>t.stop());if(ws)ws.close()});
+</script>
+</body>
+</html>
