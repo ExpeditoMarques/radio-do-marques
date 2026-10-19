@@ -4,6 +4,12 @@
   "private": true,
   "description": "Rádio online com player público e transmissão por microfone",
   "main": "server.js",
-  "scripts": { "start": "node server.js" },
-  "dependencies": { "express": "^4.21.2", "ws": "^8.18.0" }
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "ws": "^8.18.0",
+    "multer": "^2.0.2"
+  }
 }
