@@ -1,9 +1,0 @@
-{
-  "name": "radio-do-marques",
-  "version": "2.0.0",
-  "private": true,
-  "description": "Rádio online com player público e transmissão por microfone",
-  "main": "server.js",
-  "scripts": { "start": "node server.js" },
-  "dependencies": { "express": "^4.21.2", "ws": "^8.18.0" }
-}
