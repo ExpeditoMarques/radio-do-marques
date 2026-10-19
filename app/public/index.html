@@ -48,6 +48,15 @@
   </div>
 </section>
 </main>
+
+<section class="panel" style="margin-top:22px;padding:24px">
+  <div class="section-kicker">Biblioteca musical</div>
+  <h2 style="margin:9px 0">Fila automática de músicas</h2>
+  <p class="side-desc">Músicas enviadas pelo administrador. Escolha uma faixa ou inicie a fila; a próxima tocará automaticamente.</p>
+  <div class="controls"><button class="btn btn-primary" id="playQueueBtn">▶ Reproduzir fila</button><button class="btn btn-quiet" id="stopQueueBtn">■ Parar fila</button></div>
+  <div id="publicQueueStatus" style="margin-top:14px;color:#c5b4ff">Carregando fila…</div>
+  <ol id="publicQueue" style="padding-left:22px;margin-top:12px"></ol>
+</section>
 <section class="panel" style="margin-top:22px;padding:24px">
   <div class="section-kicker">Programação musical</div>
   <h2 style="margin:9px 0">Fonte musical da rádio</h2>
@@ -68,6 +77,28 @@ async function checkStatus(){try{const r=await fetch('/api/status',{cache:'no-st
 checkStatus();setInterval(checkStatus,15000);
 async function loadMusic(){try{const r=await fetch('/api/music',{cache:'no-store'});const d=await r.json();const link=$('#musicLink');if(d.configured&&d.url){$('#musicInfo').textContent='Programação configurada: '+({youtube:'YouTube',spotify:'Spotify',link:'link externo'}[d.provider]||'música');link.href=d.url;link.classList.remove('hide')}else{$('#musicInfo').textContent='A programação musical será anunciada aqui quando o administrador configurar uma fonte.';link.classList.add('hide')}}catch(e){$('#musicInfo').textContent='Programação indisponível no momento.'}}
 loadMusic();
+
+let queueTracks=[],queueIndex=-1,queuePlaying=false;
+async function loadPublicQueue(){
+ try{
+  const r=await fetch('/api/queue',{cache:'no-store'});const d=await r.json();if(!r.ok)throw Error();
+  queueTracks=d.tracks||[];const list=$('#publicQueue');list.replaceChildren();
+  if(!queueTracks.length){$('#publicQueueStatus').textContent='Ainda não há músicas na fila.';return}
+  queueTracks.forEach((t,i)=>{const li=document.createElement('li');li.style.margin='9px 0';const b=document.createElement('button');b.className='btn btn-quiet';b.textContent='▶ '+t.title;b.addEventListener('click',()=>playQueueTrack(i));li.append(b);list.append(li)});
+  $('#publicQueueStatus').textContent=queueTracks.length+' faixa(s) disponíveis.';
+ }catch(e){$('#publicQueueStatus').textContent='A fila musical está indisponível no momento.'}
+}
+async function playQueueTrack(index){
+ if(index<0||index>=queueTracks.length){queuePlaying=false;$('#publicQueueStatus').textContent='Fila concluída.';return}
+ queueIndex=index;queuePlaying=true;player.src=queueTracks[index].url;player.load();
+ try{await player.play();$('#publicQueueStatus').textContent='Tocando: '+queueTracks[index].title;$('#playerNote').textContent='Fila musical · '+queueTracks[index].title;viz.classList.remove('paused')}
+ catch(e){$('#publicQueueStatus').textContent='O navegador bloqueou a reprodução. Pressione novamente para iniciar.';queuePlaying=false}
+}
+player.addEventListener('ended',()=>{if(queuePlaying)playQueueTrack(queueIndex+1)});
+$('#playQueueBtn').addEventListener('click',()=>playQueueTrack(queueIndex>=0&&queueIndex<queueTracks.length-1?queueIndex+1:0));
+$('#stopQueueBtn').addEventListener('click',()=>{queuePlaying=false;player.pause();$('#publicQueueStatus').textContent='Fila pausada.'});
+loadPublicQueue();
+
 $('#playBtn').addEventListener('click',async()=>{try{player.src='/stream/live.mp3?ts='+Date.now();await player.play();$('#playerNote').textContent='Reprodução iniciada';viz.classList.remove('paused')}catch(e){$('#playerNote').textContent='Não foi possível iniciar o áudio';setMessage('O áudio não iniciou. Pode não haver transmissão ativa no momento.')}});
 player.addEventListener('playing',()=>{viz.classList.remove('paused');$('#playerNote').textContent='Você está ouvindo a rádio'});player.addEventListener('pause',()=>viz.classList.add('paused'));player.addEventListener('error',()=>{$('#playerNote').textContent='Aguardando sinal de áudio'});
 $('#stopBtn').addEventListener('click',()=>{player.pause();player.removeAttribute('src');player.load();player.src='/stream/live.mp3';$('#playerNote').textContent='Reprodução pausada';viz.classList.add('paused')});
