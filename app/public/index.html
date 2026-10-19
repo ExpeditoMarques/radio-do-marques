@@ -48,6 +48,13 @@
   </div>
 </section>
 </main>
+<section class="panel" style="margin-top:22px;padding:24px">
+  <div class="section-kicker">Programação musical</div>
+  <h2 style="margin:9px 0">Fonte musical da rádio</h2>
+  <p class="side-desc">Quando o administrador configurar um link, você poderá abrir a música no serviço oficial. A reprodução externa não é misturada automaticamente ao áudio ao vivo da rádio.</p>
+  <div id="musicInfo" style="margin-top:16px;color:#c5b4ff">Verificando programação…</div>
+  <a id="musicLink" class="btn btn-primary hide" href="#" target="_blank" rel="noopener noreferrer" style="display:inline-block;text-decoration:none;margin-top:12px">Abrir música no serviço oficial ↗</a>
+</section>
 <footer class="footer"><span>© <span id="year"></span> Rádio do Marquês</span><span>Feita para ouvir de qualquer lugar · <a href="/health" target="_blank" rel="noopener">Status do serviço</a></span></footer>
 </div>
 <script>
@@ -59,6 +66,8 @@ for(let i=0;i<34;i++){const b=document.createElement('span');b.className='bar';b
 function setMessage(t){message.textContent=t}
 async function checkStatus(){try{const r=await fetch('/api/status',{cache:'no-store'});if(!r.ok)throw Error();const d=await r.json();$('#statusText').textContent=d.live?'Locutor transmitindo':'Serviço online';$('#statusDot').classList.toggle('live',Boolean(d.live));}catch(e){$('#statusText').textContent='Status indisponível';$('#statusDot').classList.remove('live')}}
 checkStatus();setInterval(checkStatus,15000);
+async function loadMusic(){try{const r=await fetch('/api/music',{cache:'no-store'});const d=await r.json();const link=$('#musicLink');if(d.configured&&d.url){$('#musicInfo').textContent='Programação configurada: '+({youtube:'YouTube',spotify:'Spotify',link:'link externo'}[d.provider]||'música');link.href=d.url;link.classList.remove('hide')}else{$('#musicInfo').textContent='A programação musical será anunciada aqui quando o administrador configurar uma fonte.';link.classList.add('hide')}}catch(e){$('#musicInfo').textContent='Programação indisponível no momento.'}}
+loadMusic();
 $('#playBtn').addEventListener('click',async()=>{try{player.src='/stream/live.mp3?ts='+Date.now();await player.play();$('#playerNote').textContent='Reprodução iniciada';viz.classList.remove('paused')}catch(e){$('#playerNote').textContent='Não foi possível iniciar o áudio';setMessage('O áudio não iniciou. Pode não haver transmissão ativa no momento.')}});
 player.addEventListener('playing',()=>{viz.classList.remove('paused');$('#playerNote').textContent='Você está ouvindo a rádio'});player.addEventListener('pause',()=>viz.classList.add('paused'));player.addEventListener('error',()=>{$('#playerNote').textContent='Aguardando sinal de áudio'});
 $('#stopBtn').addEventListener('click',()=>{player.pause();player.removeAttribute('src');player.load();player.src='/stream/live.mp3';$('#playerNote').textContent='Reprodução pausada';viz.classList.add('paused')});
