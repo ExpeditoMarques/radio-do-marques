@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rádio do Marquês</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,Arial,sans-serif}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(145deg,#10172a,#080b12);color:#f7f8fc;display:grid;place-items:center;padding:24px}.card{width:min(100%,560px);background:#171e2d;border:1px solid #34415a;border-radius:24px;padding:28px;box-shadow:0 20px 70px #0006}.brand{display:flex;gap:15px;align-items:center;margin-bottom:24px}.logo{width:58px;height:58px;border-radius:18px;background:#7c3aed;display:grid;place-items:center;font-size:28px}h1{margin:0;font-size:clamp(1.6rem,5vw,2.3rem)}p{color:#b9c4d8;line-height:1.5}.live{display:inline-flex;align-items:center;gap:8px;color:#a7f3d0;font-size:.9rem}.dot{width:9px;height:9px;background:#34d399;border-radius:50%}button{border:0;border-radius:12px;padding:13px 16px;font-weight:700;cursor:pointer;background:#8b5cf6;color:white}button.secondary{background:#303b51}button:disabled{opacity:.5;cursor:not-allowed}.actions{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}audio{width:100%;margin:12px 0}label{display:block;margin-top:18px;font-weight:650}input{width:100%;padding:12px;border-radius:10px;border:1px solid #46536b;background:#0e1420;color:white;margin-top:7px}.status{font-size:.9rem;min-height:1.5em;color:#c4b5fd}.small{font-size:.8rem;color:#94a3b8}
+</style>
+</head>
+<body><main class="card">
+<div class="brand"><div class="logo">📻</div><div><h1>Rádio do Marquês</h1><div class="live"><span class="dot"></span> Rádio online</div></div></div>
+<p>Sintonize e acompanhe a programação. Quando houver transmissão ao vivo, o áudio será reproduzido aqui.</p>
+<audio id="player" controls preload="none" src="/stream/live.mp3"></audio>
+<div class="actions"><button id="play">▶ Ouvir rádio</button><button id="stop" class="secondary">■ Parar áudio</button></div>
+<hr style="border-color:#34415a;margin:24px 0">
+<h2>Transmitir pelo microfone</h2><p class="small">A transmissão exige a chave privada configurada no Render. Não compartilhe essa chave.</p>
+<label for="token">Chave de transmissão</label><input id="token" type="password" autocomplete="off" placeholder="Cole seu BROADCAST_TOKEN">
+<div class="actions"><button id="start">🎙 Iniciar transmissão</button><button id="end" class="secondary" disabled>Encerrar</button></div>
+<div id="status" class="status" role="status">Pronto para conectar.</div>
+<p class="small">Permita o uso do microfone quando o navegador perguntar. Para transmitir, use HTTPS e um navegador compatível.</p>
+</main>
+<script>
+const player=document.querySelector('#player'),status=document.querySelector('#status'),token=document.querySelector('#token');
+let ws=null,recorder=null,stream=null;
+document.querySelector('#play').onclick=async()=>{try{player.src='/stream/live.mp3?ts='+Date.now();await player.play()}catch(e){status.textContent='Não foi possível reproduzir. A rádio pode estar fora do ar.'}};
+document.querySelector('#stop').onclick=()=>{player.pause();player.removeAttribute('src');player.load()};
+document.querySelector('#start').onclick=async()=>{
+ const key=token.value.trim();if(!key){status.textContent='Digite a chave de transmissão.';return}
+ try{
+  stream=await navigator.mediaDevices.getUserMedia({audio:true});
+  const proto=location.protocol==='https:'?'wss:':'ws:';
+  ws=new WebSocket(proto+'//'+location.host+'/broadcast?token='+encodeURIComponent(key));
+  ws.binaryType='arraybuffer';
+  ws.onopen=()=>{
+   const mime=['audio/webm;codecs=opus','audio/webm'].find(x=>MediaRecorder.isTypeSupported(x));
+   recorder=new MediaRecorder(stream,mime?{mimeType:mime}:undefined);
+   recorder.ondataavailable=e=>{if(e.data.size&&ws&&ws.readyState===WebSocket.OPEN)ws.send(e.data)};
+   recorder.start(250);status.textContent='Microfone conectado. Transmissão iniciada.';document.querySelector('#start').disabled=true;document.querySelector('#end').disabled=false;
+  };
+  ws.onmessage=e=>{try{const d=JSON.parse(e.data);if(d.type==='error')status.textContent=d.message}catch{}};
+  ws.onerror=()=>status.textContent='Falha na conexão. Confira a chave e os logs do servidor.';
+  ws.onclose=()=>{if(recorder&&recorder.state!=='inactive')recorder.stop();if(stream)stream.getTracks().forEach(t=>t.stop());document.querySelector('#start').disabled=false;document.querySelector('#end').disabled=true};
+ }catch(e){status.textContent='Não foi possível acessar o microfone: '+e.message}
+};
+document.querySelector('#end').onclick=()=>{if(recorder&&recorder.state!=='inactive')recorder.stop();if(ws)ws.close();if(stream)stream.getTracks().forEach(t=>t.stop());status.textContent='Transmissão encerrada.';document.querySelector('#start').disabled=false;document.querySelector('#end').disabled=true};
+</script></body></html>
