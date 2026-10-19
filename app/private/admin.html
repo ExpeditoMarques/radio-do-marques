@@ -29,6 +29,19 @@
 <div id="musicStatus" class="status" role="status">Nenhuma alteração feita.</div>
 <p class="small">O link é aberto pelo serviço original. YouTube/Spotify não são retransmitidos automaticamente no áudio MP3 da rádio.</p>
 </section>
+
+<section class="card full">
+<h2><span class="sectionicon">🎼</span>Biblioteca MP3 e fila automática</h2>
+<p class="desc">Envie músicas próprias ou licenciadas. A fila será exibida na página pública para reprodução sequencial.</p>
+<form id="uploadForm">
+<label for="trackTitle">Nome da faixa (opcional)</label><input id="trackTitle" name="title" maxlength="120" placeholder="Ex.: Minha música">
+<label for="mp3File">Arquivo MP3 (máximo 30 MB por faixa)</label><input id="mp3File" name="file" type="file" accept=".mp3,audio/mpeg" required>
+<div class="actions"><button id="uploadButton" type="submit">＋ Adicionar à fila</button><button id="reloadQueue" class="secondary" type="button">↻ Atualizar fila</button></div>
+</form>
+<div id="queueStatus" class="status" role="status">Carregando fila musical…</div>
+<ol id="queueList" style="padding-left:22px;margin:14px 0 0"></ol>
+<p class="small">Use somente arquivos que você possui ou tem autorização para transmitir. O armazenamento local pode ser temporário em hospedagens sem disco persistente.</p>
+</section>
 <section class="card full">
 <h2><span class="sectionicon">📡</span>Monitoramento</h2><p class="desc">Veja se o servidor responde e se há um locutor transmitindo neste momento.</p>
 <div class="health"><span id="healthDot" class="dot"></span><span id="health">Consultando servidor…</span></div>
@@ -52,4 +65,30 @@ function cleanup(){if(rec&&rec.state!=='inactive'){try{rec.stop()}catch(_){}}rec
 $('#stop').addEventListener('click',()=>{cleanup();setStatus($('#micStatus'),'Transmissão encerrada.','')});
 $('#saveMusic').addEventListener('click',async()=>{const url=$('#musicUrl').value.trim(),provider=$('#provider').value;if(!url){setStatus($('#musicStatus'),'Cole o link da música ou playlist primeiro.','warn');return}try{new URL(url);const r=await fetch('/api/admin/music',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({provider,url})});const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||'Falha HTTP '+r.status);setStatus($('#musicStatus'),'Link salvo com sucesso. A página pública poderá exibir a fonte configurada.','good')}catch(e){setStatus($('#musicStatus'),e.message==='Invalid URL'?'Informe uma URL válida, começando com http:// ou https://':e.message,'bad')}});
 $('#clearMusic').addEventListener('click',async()=>{try{const r=await fetch('/api/admin/music',{method:'DELETE'});const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||'Falha HTTP '+r.status);$('#musicUrl').value='';setStatus($('#musicStatus'),'Link removido.','good')}catch(e){setStatus($('#musicStatus'),'Não foi possível remover o link: '+e.message,'bad')}});
+
+async function loadQueue(){
+ const list=$('#queueList');list.replaceChildren();
+ try{
+  const r=await fetch('/api/queue',{cache:'no-store'});const d=await r.json();if(!r.ok)throw Error(d.error||'Falha ao carregar fila');
+  if(!d.tracks||!d.tracks.length){setStatus($('#queueStatus'),'A fila está vazia. Envie seu primeiro MP3.');return}
+  d.tracks.forEach((t,i)=>{
+   const li=document.createElement('li');li.style.margin='10px 0';
+   const row=document.createElement('div');row.style.display='flex';row.style.gap='10px';row.style.alignItems='center';row.style.flexWrap='wrap';
+   const name=document.createElement('span');name.textContent=(i+1)+'. '+t.title;name.style.flex='1';
+   const play=document.createElement('a');play.href=t.url;play.textContent='Ouvir';play.target='_blank';play.rel='noopener';play.style.color='#c4b5fd';
+   const del=document.createElement('button');del.type='button';del.className='secondary';del.textContent='Remover';del.addEventListener('click',async()=>{if(!confirm('Remover esta faixa da fila?'))return;try{const rr=await fetch('/api/admin/queue/'+encodeURIComponent(t.id),{method:'DELETE'});const dd=await rr.json();if(!rr.ok)throw Error(dd.error||'Falha ao remover');setStatus($('#queueStatus'),'Faixa removida.','good');loadQueue()}catch(e){setStatus($('#queueStatus'),e.message,'bad')}});
+   row.append(name,play,del);li.append(row);list.append(li);
+  });
+  setStatus($('#queueStatus'),d.tracks.length+' faixa(s) na fila.','good');
+ }catch(e){setStatus($('#queueStatus'),'Não foi possível carregar a fila: '+e.message,'bad')}
+}
+$('#uploadForm').addEventListener('submit',async e=>{
+ e.preventDefault();const file=$('#mp3File').files[0];if(!file){setStatus($('#queueStatus'),'Selecione um arquivo MP3.','warn');return}
+ if(!file.name.toLowerCase().endsWith('.mp3')){setStatus($('#queueStatus'),'O arquivo precisa ter extensão .mp3.','warn');return}
+ if(file.size>30*1024*1024){setStatus($('#queueStatus'),'O arquivo ultrapassa o limite de 30 MB.','warn');return}
+ const data=new FormData();data.append('file',file);data.append('title',$('#trackTitle').value.trim());
+ const button=$('#uploadButton');button.disabled=true;setStatus($('#queueStatus'),'Enviando arquivo…');
+ try{const r=await fetch('/api/admin/queue',{method:'POST',body:data});const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||'Falha HTTP '+r.status);$('#mp3File').value='';$('#trackTitle').value='';setStatus($('#queueStatus'),'MP3 adicionado à fila.','good');await loadQueue()}catch(e){setStatus($('#queueStatus'),e.message,'bad')}finally{button.disabled=false}
+});
+$('#reloadQueue').addEventListener('click',loadQueue);loadQueue();
 </script></body></html>
