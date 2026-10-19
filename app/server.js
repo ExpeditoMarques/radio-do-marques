@@ -4,6 +4,8 @@ const WebSocket = require("ws");
 const { spawn } = require("child_process");
 const path = require("path");
 const fs = require("fs");
+const crypto = require("crypto");
+const multer = require("multer");
 
 const app = express();
 const server = http.createServer(app);
@@ -19,6 +21,27 @@ let broadcaster = null;
 let ffmpeg = null;
 let broadcastStartedAt = null;
 let musicConfig = null;
+const MUSIC_DIR = process.env.MUSIC_DIR || path.join(__dirname, "music");
+const QUEUE_FILE = path.join(MUSIC_DIR, "queue.json");
+fs.mkdirSync(MUSIC_DIR, { recursive: true });
+function readQueue() {
+  try { const data = JSON.parse(fs.readFileSync(QUEUE_FILE, "utf8")); return Array.isArray(data) ? data : []; }
+  catch (_) { return []; }
+}
+let musicQueue = readQueue();
+function saveQueue() { fs.writeFileSync(QUEUE_FILE, JSON.stringify(musicQueue, null, 2)); }
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: (_req, _file, cb) => cb(null, MUSIC_DIR),
+    filename: (_req, _file, cb) => cb(null, crypto.randomUUID() + ".mp3")
+  }),
+  limits: { fileSize: 30 * 1024 * 1024, files: 1 },
+  fileFilter: (_req, file, cb) => {
+    const ext = path.extname(file.originalname || "").toLowerCase();
+    if (ext !== ".mp3" || (file.mimetype && !["audio/mpeg", "audio/mp3", "application/octet-stream"].includes(file.mimetype))) return cb(new Error("Envie um arquivo MP3 válido."));
+    cb(null, true);
+  }
+});
 
 app.use(express.json({ limit: "30kb" }));
 function constantTimeEqual(a, b) {
@@ -56,6 +79,41 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get("/health", (_req, res) => res.json({ ok: true, service: "Radio do Marques" }));
 app.get("/api/status", (_req, res) => res.json({ live: Boolean(broadcaster && ffmpeg && !ffmpeg.killed), startedAt: broadcastStartedAt }));
 app.get("/api/music", (_req, res) => res.json(musicConfig || { configured: false }));
+app.get("/api/queue", (_req, res) => res.json({ tracks: musicQueue.map(({ id, title, filename }) => ({ id, title, url: "/music/" + encodeURIComponent(filename) })) }));
+app.get("/music/:filename", (req, res) => {
+  const name = path.basename(req.params.filename || "");
+  if (!name.endsWith(".mp3") || !musicQueue.some(track => track.filename === name)) return res.status(404).send("Arquivo não encontrado.");
+  res.setHeader("Content-Type", "audio/mpeg");
+  res.setHeader("Cache-Control", "public, max-age=3600");
+  res.sendFile(path.join(MUSIC_DIR, name));
+});
+app.post("/api/admin/queue", requireAdmin, (req, res) => {
+  upload.single("file")(req, res, err => {
+    if (err) return res.status(err.code === "LIMIT_FILE_SIZE" ? 413 : 400).json({ error: err.message || "Falha ao enviar o arquivo." });
+    if (!req.file) return res.status(400).json({ error: "Selecione um arquivo MP3." });
+    const title = String(req.body?.title || path.basename(req.file.originalname, path.extname(req.file.originalname))).trim().slice(0, 120) || "Faixa sem título";
+    const track = { id: crypto.randomUUID(), title, filename: req.file.filename, addedAt: new Date().toISOString() };
+    musicQueue.push(track);
+    try { saveQueue(); } catch (saveErr) { musicQueue = musicQueue.filter(t => t.id !== track.id); fs.unlink(req.file.path, () => {}); return res.status(500).json({ error: "Não foi possível salvar a fila no armazenamento." }); }
+    res.status(201).json({ ok: true, track: { id: track.id, title: track.title, url: "/music/" + track.filename }, tracks: musicQueue.length });
+  });
+});
+app.delete("/api/admin/queue/:id", requireAdmin, (req, res) => {
+  const track = musicQueue.find(t => t.id === req.params.id);
+  if (!track) return res.status(404).json({ error: "Faixa não encontrada." });
+  musicQueue = musicQueue.filter(t => t.id !== track.id);
+  try { saveQueue(); } catch (_) { return res.status(500).json({ error: "Não foi possível salvar a fila." }); }
+  fs.unlink(path.join(MUSIC_DIR, track.filename), () => {});
+  res.json({ ok: true, tracks: musicQueue.length });
+});
+app.post("/api/admin/queue/reorder", requireAdmin, (req, res) => {
+  const ids = req.body?.ids;
+  if (!Array.isArray(ids) || ids.length !== musicQueue.length || new Set(ids).size !== ids.length || ids.some(id => !musicQueue.some(t => t.id === id))) return res.status(400).json({ error: "Ordem da fila inválida." });
+  musicQueue = ids.map(id => musicQueue.find(t => t.id === id));
+  try { saveQueue(); } catch (_) { return res.status(500).json({ error: "Não foi possível salvar a fila." }); }
+  res.json({ ok: true });
+});
+
 app.post("/api/admin/music", requireAdmin, (req, res) => {
   const provider = String(req.body?.provider || "");
   const url = String(req.body?.url || "").trim();
