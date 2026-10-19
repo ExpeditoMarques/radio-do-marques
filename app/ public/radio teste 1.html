@@ -1,0 +1,1294 @@
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Minha Rádio Online</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#07111f;
+    color:#fff;
+}
+
+button{
+    cursor:pointer;
+}
+
+header{
+    height:70px;
+    background:#08182b;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 30px;
+    border-bottom:1px solid #18314d;
+}
+
+.logo{
+    font-size:22px;
+    font-weight:bold;
+}
+
+.logo span{
+    color:#19a7ff;
+}
+
+.header-buttons button{
+    background:#1687ff;
+    border:0;
+    color:#fff;
+    padding:11px 18px;
+    border-radius:8px;
+    margin-left:8px;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:30px;
+}
+
+.hero{
+    display:grid;
+    grid-template-columns:1fr 400px;
+    gap:35px;
+    align-items:center;
+    min-height:500px;
+}
+
+.hero h1{
+    font-size:55px;
+    margin-bottom:20px;
+}
+
+.hero h1 span{
+    color:#19a7ff;
+}
+
+.hero p{
+    color:#9fb0c4;
+    line-height:1.7;
+    font-size:18px;
+}
+
+.player{
+    background:#10243c;
+    padding:25px;
+    border-radius:25px;
+    box-shadow:0 20px 50px #0007;
+}
+
+.cover{
+    height:330px;
+    border-radius:18px;
+    background:
+    linear-gradient(#0003,#0008),
+    url("https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=800&q=80")
+    center/cover;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:65px;
+}
+
+.now{
+    padding:20px 0;
+}
+
+.now small{
+    color:#19a7ff;
+}
+
+.now h2{
+    margin-top:7px;
+}
+
+.now p{
+    color:#9fb0c4;
+    margin-top:5px;
+}
+
+.controls{
+    display:flex;
+    gap:15px;
+    align-items:center;
+}
+
+.play{
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    border:0;
+    background:#1687ff;
+    color:#fff;
+    font-size:23px;
+}
+
+.volume{
+    flex:1;
+}
+
+section{
+    margin-top:70px;
+}
+
+section h2{
+    margin-bottom:20px;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+}
+
+.card{
+    background:#10243c;
+    padding:25px;
+    border-radius:18px;
+    border:1px solid #1c3855;
+}
+
+.card h3{
+    margin-bottom:10px;
+}
+
+.card p{
+    color:#9fb0c4;
+    line-height:1.5;
+}
+
+/* ADMIN */
+
+.admin{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:#050c16;
+    z-index:999;
+    overflow:auto;
+}
+
+.admin-header{
+    height:70px;
+    background:#08182b;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 25px;
+}
+
+.admin-layout{
+    display:grid;
+    grid-template-columns:240px 1fr;
+    min-height:calc(100vh - 70px);
+}
+
+.sidebar{
+    background:#091728;
+    padding:20px;
+    border-right:1px solid #18314d;
+}
+
+.sidebar button{
+    width:100%;
+    background:none;
+    border:0;
+    color:#c5d5e5;
+    padding:14px;
+    text-align:left;
+    border-radius:8px;
+    margin-bottom:5px;
+}
+
+.sidebar button:hover{
+    background:#123253;
+    color:#fff;
+}
+
+.admin-content{
+    padding:35px;
+    max-width:1000px;
+}
+
+.panel{
+    display:none;
+}
+
+.panel.active{
+    display:block;
+}
+
+.box{
+    background:#10243c;
+    border:1px solid #1c3855;
+    border-radius:15px;
+    padding:25px;
+    margin-bottom:20px;
+}
+
+.box h3{
+    margin-bottom:20px;
+}
+
+label{
+    display:block;
+    color:#b9c9da;
+    margin-bottom:7px;
+    margin-top:15px;
+}
+
+input,select{
+    width:100%;
+    padding:13px;
+    border-radius:8px;
+    border:1px solid #28435f;
+    background:#071525;
+    color:#fff;
+    outline:none;
+}
+
+.btn{
+    margin-top:18px;
+    padding:13px 20px;
+    background:#1687ff;
+    border:0;
+    border-radius:8px;
+    color:#fff;
+    font-weight:bold;
+}
+
+.btn.green{
+    background:#18b86a;
+}
+
+.btn.red{
+    background:#e94355;
+}
+
+.status{
+    display:inline-block;
+    padding:7px 12px;
+    border-radius:20px;
+    background:#173c2a;
+    color:#38e58b;
+    font-size:13px;
+}
+
+.source-option{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    background:#091a2d;
+    border:1px solid #1d3854;
+    padding:15px;
+    margin-bottom:10px;
+    border-radius:10px;
+}
+
+.source-option input{
+    width:auto;
+}
+
+.source-content{
+    display:none;
+    margin-top:15px;
+}
+
+.source-content.active{
+    display:block;
+}
+
+.file-list{
+    margin-top:15px;
+}
+
+.file{
+    background:#091a2d;
+    padding:12px;
+    margin-top:7px;
+    border-radius:8px;
+    display:flex;
+    justify-content:space-between;
+}
+
+.spotify-preview{
+    background:#071525;
+    padding:20px;
+    border-radius:10px;
+    margin-top:15px;
+}
+
+footer{
+    text-align:center;
+    padding:40px;
+    color:#71859a;
+    margin-top:70px;
+}
+
+@media(max-width:850px){
+
+    .hero{
+        grid-template-columns:1fr;
+    }
+
+    .hero h1{
+        font-size:40px;
+    }
+
+    .cards{
+        grid-template-columns:1fr;
+    }
+
+    .admin-layout{
+        grid-template-columns:1fr;
+    }
+
+    .sidebar{
+        display:flex;
+        overflow:auto;
+    }
+
+    .sidebar button{
+        min-width:130px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        📻 <span>MINHA RÁDIO</span>
+    </div>
+
+    <div class="header-buttons">
+        <button onclick="abrirLogin()">🔐 Administrador</button>
+    </div>
+
+</header>
+
+
+<main class="container">
+
+    <div class="hero">
+
+        <div>
+
+            <div class="status">
+                🔴 AO VIVO
+            </div>
+
+            <h1>
+                Sua rádio<br>
+                <span>online.</span>
+            </h1>
+
+            <p>
+                Música, informação e entretenimento.
+                Ouça nossa programação de qualquer lugar.
+            </p>
+
+        </div>
+
+
+        <div class="player">
+
+            <div class="cover">
+                🎵
+            </div>
+
+            <div class="now">
+
+                <small>TOCANDO AGORA</small>
+
+                <h2 id="musicTitle">
+                    Minha Rádio
+                </h2>
+
+                <p id="musicArtist">
+                    Transmissão online
+                </p>
+
+            </div>
+
+            <div class="controls">
+
+                <button class="play" onclick="playRadio()">
+                    ▶
+                </button>
+
+                <input
+                    class="volume"
+                    type="range"
+                    min="0"
+                    max="1"
+                    step=".01"
+                    value=".8"
+                    onchange="alterarVolume(this.value)"
+                >
+
+            </div>
+
+            <audio id="radioAudio"></audio>
+
+        </div>
+
+    </div>
+
+
+    <section>
+
+        <h2>📻 Programação</h2>
+
+        <div class="cards">
+
+            <div class="card">
+                <h3>☀️ Bom Dia</h3>
+                <p>06:00 às 09:00</p>
+            </div>
+
+            <div class="card">
+                <h3>🎵 Manhã Musical</h3>
+                <p>09:00 às 12:00</p>
+            </div>
+
+            <div class="card">
+                <h3>🌙 Noite Musical</h3>
+                <p>18:00 às 00:00</p>
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<footer>
+    © 2026 Minha Rádio Online
+</footer>
+
+
+<!-- ==================================================
+     PAINEL ADMINISTRATIVO
+================================================== -->
+
+<div class="admin" id="admin">
+
+    <div class="admin-header">
+
+        <strong>⚙️ PAINEL ADMINISTRATIVO</strong>
+
+        <button class="btn red" onclick="fecharAdmin()">
+            Fechar
+        </button>
+
+    </div>
+
+
+    <div class="admin-layout">
+
+
+        <aside class="sidebar">
+
+            <button onclick="painel('dashboard')">
+                📊 Dashboard
+            </button>
+
+            <button onclick="painel('musicas')">
+                🎵 Músicas
+            </button>
+
+            <button onclick="painel('fonte')">
+                🎧 Fonte de áudio
+            </button>
+
+            <button onclick="painel('programacao')">
+                📅 Programação
+            </button>
+
+            <button onclick="painel('aparencia')">
+                🎨 Aparência
+            </button>
+
+            <button onclick="painel('config')">
+                ⚙️ Configurações
+            </button>
+
+        </aside>
+
+
+        <div class="admin-content">
+
+
+            <!-- DASHBOARD -->
+
+            <div id="dashboard" class="panel active">
+
+                <h2>📊 Dashboard</h2>
+
+                <div class="cards">
+
+                    <div class="card">
+                        <h3>🔴 Rádio</h3>
+                        <p>Online</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>👥 Ouvintes</h3>
+                        <p id="adminListeners">0</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>🎵 Fonte</h3>
+                        <p id="currentSource">
+                            Não configurada
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- MÚSICAS -->
+
+            <div id="musicas" class="panel">
+
+                <h2>🎵 Músicas</h2>
+
+                <div class="box">
+
+                    <h3>Adicionar músicas</h3>
+
+                    <input
+                        type="file"
+                        id="musicFiles"
+                        accept="audio/*"
+                        multiple
+                    >
+
+                    <button
+                        class="btn"
+                        onclick="adicionarMusicas()"
+                    >
+                        Adicionar à biblioteca
+                    </button>
+
+                    <div id="fileList" class="file-list"></div>
+
+                </div>
+
+            </div>
+
+
+            <!-- FONTE DE ÁUDIO -->
+
+            <div id="fonte" class="panel">
+
+                <h2>🎧 Fonte da programação</h2>
+
+                <div class="box">
+
+                    <h3>Escolha de onde a rádio irá tocar</h3>
+
+
+                    <!-- PASTA -->
+
+                    <div class="source-option">
+
+                        <input
+                            type="radio"
+                            name="source"
+                            value="local"
+                            onchange="selecionarFonte('local')"
+                        >
+
+                        <div>
+                            <strong>📁 Músicas locais</strong>
+                            <br>
+                            <small>
+                                Tocar músicas adicionadas à biblioteca.
+                            </small>
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="localSource"
+                        class="source-content"
+                    >
+
+                        <label>
+                            Biblioteca selecionada
+                        </label>
+
+                        <select id="localPlaylist">
+
+                            <option>
+                                Biblioteca principal
+                            </option>
+
+                            <option>
+                                Louvores
+                            </option>
+
+                            <option>
+                                Programação especial
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- STREAM -->
+
+                    <div class="source-option">
+
+                        <input
+                            type="radio"
+                            name="source"
+                            value="stream"
+                            onchange="selecionarFonte('stream')"
+                        >
+
+                        <div>
+                            <strong>📡 Stream externo</strong>
+                            <br>
+                            <small>
+                                URL de transmissão compatível.
+                            </small>
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="streamSource"
+                        class="source-content"
+                    >
+
+                        <label>
+                            URL do streaming
+                        </label>
+
+                        <input
+                            type="url"
+                            id="streamUrl"
+                            placeholder="https://servidor.com/radio.mp3"
+                        >
+
+                        <button
+                            class="btn green"
+                            onclick="testarStream()"
+                        >
+                            ▶ Testar transmissão
+                        </button>
+
+                    </div>
+
+
+                    <!-- SPOTIFY -->
+
+                    <div class="source-option">
+
+                        <input
+                            type="radio"
+                            name="source"
+                            value="spotify"
+                            onchange="selecionarFonte('spotify')"
+                        >
+
+                        <div>
+                            <strong>🎵 Playlist do Spotify</strong>
+                            <br>
+                            <small>
+                                Usar uma playlist do Spotify como referência.
+                            </small>
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="spotifySource"
+                        class="source-content"
+                    >
+
+                        <label>
+                            Link da playlist do Spotify
+                        </label>
+
+                        <input
+                            type="url"
+                            id="spotifyUrl"
+                            placeholder="https://open.spotify.com/playlist/..."
+                        >
+
+                        <button
+                            class="btn green"
+                            onclick="salvarSpotify()"
+                        >
+                            💾 Salvar playlist
+                        </button>
+
+                        <div
+                            id="spotifyPreview"
+                            class="spotify-preview"
+                        >
+                            Nenhuma playlist configurada.
+                        </div>
+
+                        <p style="color:#9fb0c4;margin-top:15px;font-size:13px;">
+                            ⚠️ O link do Spotify pode ser exibido e aberto
+                            no Spotify, mas não pode ser usado pelo navegador
+                            como um stream de áudio para retransmitir
+                            a playlist em uma rádio pública.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        class="btn"
+                        onclick="salvarFonte()"
+                    >
+                        💾 Salvar fonte da rádio
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- PROGRAMAÇÃO -->
+
+            <div id="programacao" class="panel">
+
+                <h2>📅 Programação</h2>
+
+                <div class="box">
+
+                    <label>Nome do programa</label>
+
+                    <input
+                        id="programName"
+                        placeholder="Ex: Bom Dia Rádio"
+                    >
+
+                    <label>Horário</label>
+
+                    <input
+                        id="programTime"
+                        placeholder="06:00 - 09:00"
+                    >
+
+                    <button class="btn">
+                        Adicionar programa
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- APARÊNCIA -->
+
+            <div id="aparencia" class="panel">
+
+                <h2>🎨 Aparência</h2>
+
+                <div class="box">
+
+                    <label>
+                        Nome da rádio
+                    </label>
+
+                    <input
+                        id="radioName"
+                        value="MINHA RÁDIO"
+                    >
+
+                    <label>
+                        Cor principal
+                    </label>
+
+                    <input
+                        type="color"
+                        id="primaryColor"
+                        value="#1687ff"
+                    >
+
+                    <button
+                        class="btn"
+                        onclick="salvarAparencia()"
+                    >
+                        💾 Salvar aparência
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- CONFIG -->
+
+            <div id="config" class="panel">
+
+                <h2>⚙️ Configurações</h2>
+
+                <div class="box">
+
+                    <h3>Configurações da rádio</h3>
+
+                    <label>
+                        Nome do administrador
+                    </label>
+
+                    <input value="Administrador">
+
+                    <label>
+                        WhatsApp da rádio
+                    </label>
+
+                    <input
+                        placeholder="5599999999999"
+                    >
+
+                    <button class="btn">
+                        Salvar configurações
+                    </button>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     LOGIN
+================================================== -->
+
+<script>
+
+const SENHA_ADMIN = "123456";
+
+function abrirLogin(){
+
+    const senha =
+    prompt("Digite a senha do administrador:");
+
+    if(senha === SENHA_ADMIN){
+
+        document.getElementById("admin").style.display="block";
+
+    }else{
+
+        alert("Senha incorreta!");
+
+    }
+
+}
+
+function fecharAdmin(){
+
+    document.getElementById("admin").style.display="none";
+
+}
+
+
+/* NAVEGAÇÃO DO PAINEL */
+
+function painel(nome){
+
+    document
+    .querySelectorAll(".panel")
+    .forEach(p => p.classList.remove("active"));
+
+    document
+    .getElementById(nome)
+    .classList.add("active");
+
+}
+
+
+/* PLAYER */
+
+function playRadio(){
+
+    const audio =
+    document.getElementById("radioAudio");
+
+    const stream =
+    localStorage.getItem("radioStream");
+
+    if(!stream){
+
+        alert(
+            "Nenhuma transmissão configurada. " +
+            "Entre no painel administrativo e configure uma fonte."
+        );
+
+        return;
+    }
+
+    audio.src=stream;
+
+    audio.play()
+    .catch(()=>{
+        alert("Não foi possível iniciar a transmissão.");
+    });
+
+}
+
+
+function alterarVolume(valor){
+
+    document
+    .getElementById("radioAudio")
+    .volume=valor;
+
+}
+
+
+/* MÚSICAS */
+
+let biblioteca=[];
+
+function adicionarMusicas(){
+
+    const files =
+    document.getElementById("musicFiles").files;
+
+    for(let file of files){
+
+        biblioteca.push(file.name);
+
+    }
+
+    atualizarBiblioteca();
+
+}
+
+
+function atualizarBiblioteca(){
+
+    const lista =
+    document.getElementById("fileList");
+
+    lista.innerHTML="";
+
+    biblioteca.forEach((music,index)=>{
+
+        lista.innerHTML += `
+
+        <div class="file">
+
+            <span>🎵 ${music}</span>
+
+            <button
+                onclick="removerMusica(${index})"
+                style="background:none;border:0;color:#ff6470;"
+            >
+                ✕
+            </button>
+
+        </div>
+
+        `;
+
+    });
+
+}
+
+
+/* REMOVER */
+
+function removerMusica(index){
+
+    biblioteca.splice(index,1);
+
+    atualizarBiblioteca();
+
+}
+
+
+/* SELECIONAR FONTE */
+
+function selecionarFonte(tipo){
+
+    document
+    .querySelectorAll(".source-content")
+    .forEach(el=>{
+        el.classList.remove("active");
+    });
+
+
+    if(tipo==="local"){
+
+        document
+        .getElementById("localSource")
+        .classList.add("active");
+
+    }
+
+
+    if(tipo==="stream"){
+
+        document
+        .getElementById("streamSource")
+        .classList.add("active");
+
+    }
+
+
+    if(tipo==="spotify"){
+
+        document
+        .getElementById("spotifySource")
+        .classList.add("active");
+
+    }
+
+}
+
+
+/* SALVAR STREAM */
+
+function salvarFonte(){
+
+    const selected =
+    document.querySelector(
+        'input[name="source"]:checked'
+    );
+
+    if(!selected){
+
+        alert("Escolha uma fonte.");
+
+        return;
+    }
+
+
+    const tipo=selected.value;
+
+    localStorage.setItem(
+        "radioSource",
+        tipo
+    );
+
+
+    if(tipo==="stream"){
+
+        const url =
+        document.getElementById("streamUrl").value.trim();
+
+        if(!url){
+
+            alert("Digite a URL do streaming.");
+
+            return;
+        }
+
+        localStorage.setItem(
+            "radioStream",
+            url
+        );
+
+    }
+
+
+    if(tipo==="spotify"){
+
+        const url =
+        document.getElementById("spotifyUrl").value.trim();
+
+        if(!url){
+
+            alert("Digite o link do Spotify.");
+
+            return;
+        }
+
+        localStorage.setItem(
+            "spotifyPlaylist",
+            url
+        );
+
+    }
+
+
+    document
+    .getElementById("currentSource")
+    .textContent=tipo.toUpperCase();
+
+
+    alert("Fonte salva com sucesso!");
+
+}
+
+
+/* SPOTIFY */
+
+function salvarSpotify(){
+
+    const url =
+    document
+    .getElementById("spotifyUrl")
+    .value
+    .trim();
+
+
+    if(!url){
+
+        alert("Cole o link da playlist.");
+
+        return;
+
+    }
+
+
+    if(!url.includes("spotify.com")){
+
+        alert("Esse não parece ser um link do Spotify.");
+
+        return;
+
+    }
+
+
+    localStorage.setItem(
+        "spotifyPlaylist",
+        url
+    );
+
+
+    document
+    .getElementById("spotifyPreview")
+    .innerHTML=`
+
+        <strong>🎵 Playlist configurada</strong>
+
+        <br><br>
+
+        <a
+            href="${url}"
+            target="_blank"
+            style="color:#1ed760;"
+        >
+            Abrir playlist no Spotify →
+        </a>
+
+    `;
+
+
+    alert("Playlist do Spotify salva!");
+}
+
+
+/* TESTAR STREAM */
+
+function testarStream(){
+
+    const url =
+    document
+    .getElementById("streamUrl")
+    .value
+    .trim();
+
+
+    if(!url){
+
+        alert("Digite uma URL.");
+
+        return;
+
+    }
+
+
+    const audio =
+    document.getElementById("radioAudio");
+
+
+    audio.src=url;
+
+
+    audio.play()
+    .then(()=>{
+
+        alert("Stream iniciado com sucesso!");
+
+    })
+    .catch(()=>{
+
+        alert(
+            "Não foi possível reproduzir esse endereço. " +
+            "Verifique se ele é realmente um stream de áudio."
+        );
+
+    });
+
+}
+
+
+/* APARÊNCIA */
+
+function salvarAparencia(){
+
+    const color =
+    document
+    .getElementById("primaryColor")
+    .value;
+
+
+    document.documentElement.style
+    .setProperty("--primary",color);
+
+
+    alert("Aparência salva!");
+
+}
+
+
+/* OUVINTES */
+
+function atualizarOuvintes(){
+
+    const numero =
+    Math.floor(Math.random()*50)+5;
+
+    document
+    .getElementById("adminListeners")
+    .textContent=numero;
+
+}
+
+setInterval(atualizarOuvintes,5000);
+
+atualizarOuvintes();
+
+</script>
+
+</body>
+</html>
+```
