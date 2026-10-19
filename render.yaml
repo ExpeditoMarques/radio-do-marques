@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: radio-do-marques
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: BROADCAST_TOKEN
+        generateValue: true
+      - key: ICECAST_SOURCE_PASSWORD
+        generateValue: true
+      - key: ICECAST_ADMIN_PASSWORD
+        generateValue: true
+      - key: ICECAST_RELAY_PASSWORD
+        generateValue: true
+      - key: ICECAST_HOST
+        value: 127.0.0.1
+      - key: ICECAST_PORT
+        value: "8000"
